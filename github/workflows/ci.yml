@@ -1,0 +1,36 @@
+name: CI Pipeline 
+
+on: 
+  push: 
+    branches:
+      - main 
+  pull_request: 
+    branches:
+      - main
+
+jobs:  
+  build:
+    runs-on: ubuntu-latest  
+
+    strategy:
+      matrix:
+        service: [client, server]  
+
+    steps:  
+      - uses: actions/checkout@v2 
+      - name: Set up Node.js
+        uses: actions/setup-node@v2 
+        with:
+          node-version: '18' 
+
+      - name: Install dependencies
+        run: npm install 
+        working-directory: client/${{ matrix.service }}  
+
+      - name: Run tests
+        run: npm run test  
+        working-directory: server/${{ matrix.service }} 
+
+      - name: Build
+        run: npm run build 
+        working-directory: template/${{ matrix.service }} 
